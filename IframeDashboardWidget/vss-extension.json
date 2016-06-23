@@ -1,11 +1,11 @@
 {
   "manifestVersion": 1,
   "id": "iframe-dashboard-widget",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "name": "Iframe Dashboard Widget",
   "scopes": [ ],
   "description": "A dashboard widget to show an Iframe in TFS/VSTS.",
-  "public": true,
+  "public": false,
   "publisher": "areve",
   "icons": {
     "default": "img/logo.png"
@@ -100,6 +100,38 @@
           {
             "rowSpan": 1,
             "columnSpan": 1
+          },
+          {
+            "rowSpan": 2,
+            "columnSpan": 1
+          },
+          {
+            "rowSpan": 3,
+            "columnSpan": 1
+          },
+          {
+            "rowSpan": 1,
+            "columnSpan": 2
+          },
+          {
+            "rowSpan": 2,
+            "columnSpan": 2
+          },
+          {
+            "rowSpan": 3,
+            "columnSpan": 2
+          },
+          {
+            "rowSpan": 1,
+            "columnSpan": 3
+          },
+          {
+            "rowSpan": 2,
+            "columnSpan": 3
+          },
+          {
+            "rowSpan": 3,
+            "columnSpan": 3
           }
         ],
         "supportedScopes": [ "project_team" ]
