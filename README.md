@@ -7,8 +7,8 @@ The url may be in any format but 'https:' and 'data:' urls work best.  'http:'
 urls will not work due to browser security.
 
 ## Some examples of how you can use
-![](img/iframe-dashboard-widget-preview.png)
+![](IframeDashboardWidget/img/iframe-dashboard-widget-preview.png)
 
 ## The configuration pane
-![](img/iframe-dashboard-widget-configuration.png)
+![](IframeDashboardWidget/img/iframe-dashboard-widget-configuration.png)
 
