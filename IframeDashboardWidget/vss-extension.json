@@ -1,0 +1,119 @@
+{
+  "manifestVersion": 1,
+  "id": "iframe-dashboard-widget",
+  "version": "1.0.0",
+  "name": "Iframe Dashboard Widget",
+  "scopes": [ ],
+  "description": "A dashboard widget to show an Iframe in TFS/VSTS.",
+  "public": true,
+  "publisher": "areve",
+  "icons": {
+    "default": "img/logo.png"
+  },
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "tags": [
+    "Iframe",
+    "Widgets",
+    "Dashboard"
+  ],
+  "screenshots": [
+    {
+      "path": "img/screenshots/widgets.png"
+    },
+    {
+      "path": "img/screenshots/configuration.png"
+    }
+  ],
+  "content": {
+    "details": {
+      "path": "overview.md"
+    }
+  },
+  "links": {
+    "home": {
+      "uri": "https://github.com/areve/IframeDashboardWidget"
+    },
+    "getstarted": {
+      "uri": "https://github.com/areve/IframeDashboardWidget"
+    },
+    "learn": {
+      "uri": "https://github.com/areve/IframeDashboardWidget"
+    },
+    "support": {
+      "uri": "https://github.com/areve/IframeDashboardWidget"
+    },
+    "repository": {
+      "uri": "https://github.com/areve/IframeDashboardWidget"
+    },
+    "issues": {
+      "uri": "https://github.com/areve/IframeDashboardWidget/issues"
+    }
+  },
+  "branding": {
+    "color": "rgb(220, 235, 252)",
+    "theme": "light"
+  },
+  "files": [
+    {
+      "path": "css",
+      "addressable": true
+    },
+    {
+      "path": "img",
+      "addressable": true
+    },
+    {
+      "path": "scripts",
+      "addressable": true
+    },
+    {
+      "path": "iframe-dashboard-widget.html",
+      "addressable": true
+    },
+    {
+      "path": "iframe-dashboard-widget-configuration.html",
+      "addressable": true
+    }
+  ],
+  "categories": [
+    "Integrate"
+  ],
+  "contributions": [
+    {
+      "id": "IframeDashboardWidget",
+      "type": "ms.vss-dashboards-web.widget",
+      "targets": [
+        "ms.vss-dashboards-web.widget-catalog",
+        ".IframeDashboardWidget.Configuration"
+      ],
+      "properties": {
+        "name": "Iframe Dashboard Widget",
+        "description": "Displays an iframe in a widget.",
+        "previewImageUrl": "img/iframe-dashboard-widget-preview.png",
+        "uri": "iframe-dashboard-widget.html",
+        "isNameConfigurable": true,
+        "supportedSizes": [
+          {
+            "rowSpan": 1,
+            "columnSpan": 1
+          }
+        ],
+        "supportedScopes": [ "project_team" ]
+      }
+    },
+    {
+      "id": "IframeDashboardWidget.Configuration",
+      "type": "ms.vss-dashboards-web.widget-configuration",
+      "targets": [ "ms.vss-dashboards-web.widget-configuration" ],
+      "properties": {
+        "name": "IframeDashboardWidget Configuration",
+        "description": "Configures IframeDashboardWidget",
+        "uri": "iframe-dashboard-widget-configuration.html"
+      }
+    }
+  ]
+}

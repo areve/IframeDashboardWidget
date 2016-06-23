@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="scripts/VSS.SDK.min.js"></script>
+    <script type="text/javascript">
+        var appInsights = window.appInsights || function (config) { function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t }({ instrumentationKey: "ff5f05d5-f1f3-484a-8fca-2c001689ad24" }); window.appInsights = appInsights;
+    </script>
+    <script type="text/javascript">
+        VSS.init({
+            explicitNotifyLoaded: true,
+            usePlatformStyles: true
+        });
+
+        VSS.require("TFS/Dashboards/WidgetHelpers", function (WidgetHelpers) {
+            WidgetHelpers.IncludeWidgetConfigurationStyles();
+            VSS.register("IframeDashboardWidget.Configuration", function () {
+                $url = $("#url input");
+                $errorUrl = $("#url .validation-error-text");
+
+                return {
+                    load: function (widgetSettings, widgetConfigurationContext) {
+                        var settings = JSON.parse(widgetSettings.customSettings.data);
+                        if (settings && settings.url) {
+                            $url.val(settings.url);
+                        }
+
+                        $url.on("change", function () {
+                            if ($url.val() == "") {
+                                $errorUrl.text("Enter a url to display in the widget");
+                                $errorUrl.parent().css("visibility", "visible");
+                                return;
+                            }
+
+                            $errorUrl.parent().css("visibility", "hidden");
+                            var customSettings = {
+                                data: JSON.stringify({
+                                    url: $url.val()
+                                })
+                            };
+
+                            var eventName = WidgetHelpers.WidgetEvent.ConfigurationChange;
+                            var eventArgs = WidgetHelpers.WidgetEvent.Args(customSettings);
+                            widgetConfigurationContext.notify(eventName, eventArgs);
+
+
+                        });
+
+                        return WidgetHelpers.WidgetStatusHelper.Success();
+                    },
+                    onSave: function () {
+                        var customSettings = {
+                            data: JSON.stringify({
+                                url: $url.val()
+
+                            })
+                        };
+                        return WidgetHelpers.WidgetConfigurationSave.Valid(customSettings);
+                    }
+                }
+            });
+            VSS.notifyLoadSucceeded();
+        });
+
+        VSS.ready(function () {
+            window.appInsights.setAuthenticatedUserContext(
+                VSS.getWebContext().user.id,
+                VSS.getWebContext().collection.id
+            );
+
+            window.appInsights.trackPageView("IframeDashboardWidgetConfiguration");
+        });
+    </script>
+</head>
+<body>
+    <div class="widget-configuration">
+        <div class="single-line-text-input" id="url">
+            <label>Url</label>
+            <input type="text" />
+
+            <span class="validation-error">
+                <span class="icon-error-exclamation"></span>
+                <span class="validation-error-text"></span>
+            </span>
+        </div>
+        <p>
+            The url may be 'https://...' or 'data:...' and 'http://...' will not work.
+        </p>
+        <p>
+            For more info about 'Iframe Dashboard Widget' visit <a href="https://github.com/areve/IframeDashboardWidget">https://github.com/areve/IframeDashboardWidget</a>.
+        </p>
+    </div>
+</body>
+</html>
