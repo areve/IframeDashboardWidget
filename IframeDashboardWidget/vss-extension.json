@@ -1,11 +1,11 @@
 {
   "manifestVersion": 1,
   "id": "iframe-dashboard-widget",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "name": "Iframe Dashboard Widget",
   "scopes": [ ],
   "description": "A dashboard widget to show an Iframe in TFS/VSTS.",
-  "public": false,
+  "public": true,
   "publisher": "areve",
   "icons": {
     "default": "img/logo.png"
