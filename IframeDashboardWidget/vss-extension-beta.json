@@ -1,11 +1,11 @@
 {
   "manifestVersion": 1,
-  "id": "iframe-dashboard-widget",
+  "id": "iframe-dashboard-widget-beta",
   "version": "1.0.9",
-  "name": "Iframe Dashboard Widget",
+  "name": "Iframe Dashboard Widget (Beta)",
   "scopes": [ ],
   "description": "A dashboard widget to show an Iframe in TFS/VSTS.",
-  "public": true,
+  "public": false,
   "publisher": "areve",
   "icons": {
     "default": "img/logo.png"
@@ -91,7 +91,7 @@
         ".IframeDashboardWidget.Configuration"
       ],
       "properties": {
-        "name": "Iframe Dashboard Widget",
+        "name": "Iframe Dashboard Widget (Beta)",
         "description": "Displays an iframe in a widget.",
         "previewImageUrl": "img/iframe-dashboard-widget-preview.png",
         "uri": "iframe-dashboard-widget.html",
