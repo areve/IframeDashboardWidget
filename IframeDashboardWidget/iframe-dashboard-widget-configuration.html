@@ -50,10 +50,12 @@
                         $errorUrl.parent().css("visibility", "visible");
                         return false;
                     }
-                    if (/^http:/i.test($url.val())) {
+                    if (!(/^http:/i.test(window.location))) {
+                      if (/^http:/i.test($url.val())) {
                         $errorUrl.text("Url must not start with 'http:', use 'https:' instead.");
                         $errorUrl.parent().css("visibility", "visible");
                         return false;
+                      }
                     }
                     return true;
                 }
