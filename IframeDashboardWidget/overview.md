@@ -3,8 +3,9 @@ A dashboard widget to show an Iframe in TFS/VSTS.
 
 The widget allows data from a web page to be added easily in your VSTS dashboard.
 
-The url may start with 'https:' or 'data:'. Urls that start with 'http:' would
-not work because of browser security restrictions and so are not supported.
+The url may start with 'https:' or 'data:'.  If you are using TFS on 'http:' you
+may also use 'http:'. Urls that start with 'http:' will
+not work in VSTS because of browser security restrictions and so are not supported.
 
 For the source code visit https://github.com/areve/IframeDashboardWidget
 

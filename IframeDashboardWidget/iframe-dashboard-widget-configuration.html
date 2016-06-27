@@ -43,18 +43,14 @@
                         return WidgetHelpers.WidgetConfigurationSave.Valid(getCustomSettings());
                     }
                 }
-                 
+
                 function validate() {
                     if ($url.val() == "") {
                         $errorUrl.text("Enter a url to display in the widget");
                         $errorUrl.parent().css("visibility", "visible");
                         return false;
                     }
-                    if (/^http:/i.test($url.val())) {
-                        $errorUrl.text("Url must not start with 'http:', use 'https:' instead.");
-                        $errorUrl.parent().css("visibility", "visible");
-                        return false;
-                    }
+
                     return true;
                 }
 
@@ -92,7 +88,8 @@
             </span>
         </div>
         <p>
-            The url may start with 'https:' or 'data:'.
+            The url may start with 'https:' or 'data:'. If you are using TFS on
+            'http:' you may also use 'http:'.
             The url must not be more than 4000 characters.
         </p>
         <p>
