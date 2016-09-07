@@ -1,3 +1,5 @@
+//dependencies=
+// Copyright (C) Microsoft Corporation. All rights reserved.
 ///<reference path='../References/VSS-Common.d.ts' />
 ///<reference path='../References/VSS.SDK.Interfaces.d.ts' />
 ///<reference path='../References/SDK.Interfaces.d.ts' />
@@ -663,8 +665,9 @@ var XDM;
 })(XDM || (XDM = {}));
 var VSS;
 (function (VSS) {
+    // W A R N I N G: if VssSDKVersion changes, the VSS WEB SDK demand resolver needs to be updated with the new version
     VSS.VssSDKVersion = 2.0;
-    VSS.VssSDKRestVersion = "2.2";
+    VSS.VssSDKRestVersion = "2.3";
     var bodyElement;
     var webContext;
     var hostPageContext;
@@ -678,8 +681,16 @@ var VSS;
     var isReady = false;
     var readyCallbacks;
     var parentChannel = XDM.XDMChannelManager.get().addChannel(window.parent);
+    var shimmedLocalStorage;
+    var hostReadyForShimUpdates = false;
     var Storage = (function () {
-        function Storage() {
+        var changeCallback;
+        function invokeChangeCallback() {
+            if (changeCallback) {
+                changeCallback.call(this);
+            }
+        }
+        function Storage(changeCallback) {
         }
         Object.defineProperties(Storage.prototype, {
             getItem: {
@@ -693,23 +704,37 @@ var VSS;
             setItem: {
                 get: function () {
                     return function (key, value) {
-                        this["" + key] = "" + value;
+                        key = "" + key;
+                        var existingValue = this[key];
+                        var newValue = "" + value;
+                        if (existingValue !== newValue) {
+                            this[key] = newValue;
+                            invokeChangeCallback();
+                        }
                     };
                 }
             },
             removeItem: {
                 get: function () {
                     return function (key) {
-                        delete this["" + key];
+                        key = "" + key;
+                        if (typeof this[key] !== "undefined") {
+                            delete this[key];
+                            invokeChangeCallback();
+                        }
                     };
                 }
             },
             clear: {
                 get: function () {
                     return function () {
-                        for (var _i = 0, _a = Object.keys(this); _i < _a.length; _i++) {
-                            var key = _a[_i];
-                            delete this[key];
+                        var keys = Object.keys(this);
+                        if (keys.length > 0) {
+                            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                                var key = keys_1[_i];
+                                delete this[key];
+                            }
+                            invokeChangeCallback();
                         }
                     };
                 }
@@ -720,11 +745,26 @@ var VSS;
                         return Object.keys(this)[index];
                     };
                 }
+            },
+            length: {
+                get: function () {
+                    return Object.keys(this).length;
+                }
             }
         });
         return Storage;
     }());
     function shimSandboxedProperties() {
+        var updateSettingsTimeout;
+        function updateShimmedStorageCallback() {
+            // Talk to the host frame on a 50 ms delay in order to batch storage/cookie updates
+            if (!updateSettingsTimeout) {
+                updateSettingsTimeout = setTimeout(function () {
+                    updateSettingsTimeout = 0;
+                    updateHostSandboxedStorage();
+                }, 50);
+            }
+        }
         // Override document.cookie if it is not available
         var hasCookieSupport = false;
         try {
@@ -750,7 +790,8 @@ var VSS;
         }
         if (!hasLocalStorage) {
             delete window.localStorage;
-            Object.defineProperty(window, "localStorage", { value: new Storage() });
+            shimmedLocalStorage = new Storage(updateShimmedStorageCallback);
+            Object.defineProperty(window, "localStorage", { value: shimmedLocalStorage });
             delete window.sessionStorage;
             Object.defineProperty(window, "sessionStorage", { value: new Storage() });
         }
@@ -808,6 +849,37 @@ var VSS;
                 initialConfiguration = handshakeData.initialConfig || {};
                 initialContribution = handshakeData.contribution;
                 extensionContext = handshakeData.extensionContext;
+                if (handshakeData.sandboxedStorage) {
+                    var updateNeeded = false;
+                    if (shimmedLocalStorage) {
+                        if (handshakeData.sandboxedStorage.localStorage) {
+                            // Merge host data in with any values already set.
+                            var newData = handshakeData.sandboxedStorage.localStorage;
+                            // Check for any properties written prior to the initial handshake
+                            for (var _i = 0, _a = Object.keys(shimmedLocalStorage); _i < _a.length; _i++) {
+                                var key = _a[_i];
+                                var value = shimmedLocalStorage.getItem(key);
+                                if (value !== newData[key]) {
+                                    newData[key] = value;
+                                    updateNeeded = true;
+                                }
+                            }
+                            // Update the stored values
+                            for (var _b = 0, _c = Object.keys(newData); _b < _c.length; _b++) {
+                                var key = _c[_b];
+                                shimmedLocalStorage.setItem(key, newData[key]);
+                            }
+                        }
+                        else if (shimmedLocalStorage.length > 0) {
+                            updateNeeded = true;
+                        }
+                    }
+                    hostReadyForShimUpdates = true;
+                    if (updateNeeded) {
+                        // Talk to host frame to issue update
+                        updateHostSandboxedStorage();
+                    }
+                }
                 if (usingPlatformScripts || usingPlatformStyles) {
                     setupAmdLoader();
                 }
@@ -818,6 +890,12 @@ var VSS;
         }, 0);
     }
     VSS.init = init;
+    function updateHostSandboxedStorage() {
+        var storage = {
+            localStorage: JSON.stringify(shimmedLocalStorage || {})
+        };
+        parentChannel.invokeRemoteMethod("updateSandboxedStorage", "VSS.HostControl", [storage]);
+    }
     /**
      * Ensures that the AMD loader from the host is configured and fetches a script (AMD) module
      * (and its dependencies). If no callback is supplied, this will still perform an asynchronous
@@ -870,7 +948,9 @@ var VSS;
     function issueVssRequire(modules, callback) {
         if (hostPageContext.diagnostics.bundlingEnabled) {
             window.require(["VSS/Bundling"], function (VSS_Bundling) {
-                VSS_Bundling.requireModules(modules, callback);
+                VSS_Bundling.requireModules(modules).spread(function () {
+                    callback.apply(this, arguments);
+                });
             });
         }
         else {
@@ -1048,12 +1128,17 @@ var VSS;
     VSS.getAppToken = getAppToken;
     /**
     * Requests the parent window to resize the container for this extension based on the current extension size.
+    *
+    * @param width Optional width, defaults to scrollWidth
+    * @param height Optional height, defaults to scrollHeight
     */
-    function resize() {
+    function resize(width, height) {
         if (!bodyElement) {
             bodyElement = document.getElementsByTagName("body").item(0);
         }
-        parentChannel.invokeRemoteMethod("resize", "VSS.HostControl", [bodyElement.scrollWidth, bodyElement.scrollHeight]);
+        var newWidth = typeof width === "number" ? width : bodyElement.scrollWidth;
+        var newHeight = typeof height === "number" ? height : bodyElement.scrollHeight;
+        parentChannel.invokeRemoteMethod("resize", "VSS.HostControl", [newWidth, newHeight]);
     }
     VSS.resize = resize;
     function setupAmdLoader() {
@@ -1300,4 +1385,3 @@ var VSS;
         }
     }
 })(VSS || (VSS = {}));
-//# sourceMappingURL=VSS.SDK.js.map
