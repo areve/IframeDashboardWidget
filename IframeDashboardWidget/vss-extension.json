@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "id": "iframe-dashboard-widget",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "name": "Iframe Dashboard Widget",
   "scopes": [ ],
   "description": "A dashboard widget to show an Iframe in TFS/VSTS.",
