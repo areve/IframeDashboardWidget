@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "tfx-cli": "^0.7.11",
+    "tsd": "^0.11.0",
+    "vss-web-extension-sdk": "^1.100.0"
+  },
+  "scripts": {
+    "package-beta": "tfx extension create --manifest-globs vss-extension-beta.json",
+    "package": "tfx extension create --manifest-globs vss-extension.json"
+  },
+  "name": "iframe-dashboard-widget",
+  "private": true,
+  "version": "0.0.0"
+}
